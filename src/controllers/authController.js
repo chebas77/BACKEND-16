@@ -89,5 +89,34 @@ const login = async (req, res) => {
 };
 
 
+// ========== ME (OBTENER USUARIO ACTUAL) ==========
+const me = async (req, res) => {
+  try {
+    res.json({
+      user: {
+        id: req.user.id,
+        fullName: req.user.fullName,
+        email: req.user.email,
+        role: req.user.Role.name
+      }
+    });
+  } catch (err) {
+    console.error('Error en /me:', err);
+    res.status(500).json({ message: 'Error al obtener usuario' });
+  }
+};
+
+
+// ========== LOGOUT ==========
+const logout = async (req, res) => {
+  try {
+    res.json({ message: 'Logout exitoso' });
+  } catch (err) {
+    console.error('Error en logout:', err);
+    res.status(500).json({ message: 'Error en logout' });
+  }
+};
+
+
 // EXPORTAR TODO
-module.exports = { register, login };
+module.exports = { register, login, me, logout };
