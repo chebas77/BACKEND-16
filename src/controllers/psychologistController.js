@@ -112,13 +112,6 @@ const getAvailableTimes = async (req, res) => {
     if (!psychologist)
       return res.status(404).json({ message: "Psicólogo no encontrado" });
 
-    if (!psychologist.availability)
-      return res.json({
-        psychologistId,
-        date,
-        availableTimes: []
-      });
-
     // Obtener el día de la semana (monday, tuesday...)
     const dayOfWeek = new Date(date)
       .toLocaleDateString("en-US", { weekday: "long" })
@@ -129,6 +122,7 @@ const getAvailableTimes = async (req, res) => {
 
     // DEBUG: imprimir estado para diagnóstico
     console.log(`DEBUG getAvailableTimes | psyId=${psychologistId} date=${date} day=${dayOfWeek}`);
+    console.log(`DEBUG availability object:`, availabilityObj);
     console.log(`DEBUG dayAvailability:`, dayAvailability);
 
     // Citas ya tomadas ese día
