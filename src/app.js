@@ -10,11 +10,29 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 
 const app = express();
 
+// Configurar orígenes permitidos
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://frontend-16.vercel.app',
+  'https://frontend-16-two.vercel.app',
+  'https://frontend-16-git-main-msrj743-1903s-projects.vercel.app'
+];
+
 // Middlewares globales
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
-    credentials: true, // 🔥 NECESARIO PARA LOGIN
+    origin: function (origin, callback) {
+      // Permitir requests sin origin (como apps móviles o curl)
+      if (!origin) return callback(null, true);
+      
+      // Permitir si el origin está en la lista O si es un subdominio de vercel
+      if (allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
   })
 );
 
