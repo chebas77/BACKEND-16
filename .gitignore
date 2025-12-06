@@ -1,0 +1,25 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno (NO subir a producción)
+.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Base de datos local
+*.sqlite
+*.db
+
+# Archivos temporales
+*.tmp
+*.temp
