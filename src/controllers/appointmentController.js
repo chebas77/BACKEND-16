@@ -115,6 +115,26 @@ const getMyAppointments = async (req, res) => {
 };
 
 // =========================
+// 2.5 LISTAR TODAS LAS CITAS (ADMIN ONLY)
+// =========================
+const getAllAppointments = async (req, res) => {
+  try {
+    const appointments = await Appointment.findAll({
+      include: [
+        { model: User, as: "patient", attributes: ["id", "fullName", "email"] },
+        { model: Psychologist, attributes: ["id", "fullName", "specialty"] }
+      ],
+      order: [["date", "DESC"], ["time", "DESC"]]
+    });
+
+    res.json(appointments);
+  } catch (err) {
+    console.error("Error getAllAppointments:", err);
+    res.status(500).json({ message: "Error al listar todas las citas" });
+  }
+};
+
+// =========================
 // 3. LISTAR CITAS DE UN PSICÓLOGO (ADMIN)
 // =========================
 const getPsychologistAppointments = async (req, res) => {
@@ -233,6 +253,7 @@ const deleteAppointment = async (req, res) => {
 module.exports = {
   createAppointment,
   getMyAppointments,
+  getAllAppointments,
   getPsychologistAppointments,
   updateAppointment,
   cancelAppointment,
