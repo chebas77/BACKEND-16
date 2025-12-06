@@ -4,15 +4,8 @@ const User = require('./User');
 const Psychologist = require('./Psychologist');
 const Appointment = require('./Appointment');
 
-// RELACIONES (IMPORTANTE)
-Role.hasMany(User, { foreignKey: 'roleId' });
-User.belongsTo(Role, { foreignKey: 'roleId' });
-
-Psychologist.hasMany(Appointment, { foreignKey: 'psychologistId' });
-Appointment.belongsTo(Psychologist, { foreignKey: 'psychologistId' });
-
-User.hasMany(Appointment, { foreignKey: 'userId' });
-Appointment.belongsTo(User, { foreignKey: 'userId' });
+// Las asociaciones se definen dentro de cada modelo (User.js, Appointment.js, etc.)
+// para evitar duplicación de asociaciones y errores de alias.
 
 const initDatabase = async () => {
   try {

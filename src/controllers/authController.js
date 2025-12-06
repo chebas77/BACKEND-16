@@ -67,8 +67,8 @@ const login = async (req, res) => {
 
     const token = jwt.sign(
       { id: user.id, role: user.Role.name },
-      process.env.JWT_SECRET || 'default-secret-key-change-in-production',
-      { expiresIn: process.env.JWT_EXPIRES_IN || '8h' }
+      process.env.JWT_SECRET,
+      { expiresIn: '8h' }
     );
 
     res.json({
@@ -89,34 +89,28 @@ const login = async (req, res) => {
 };
 
 
-// ========== ME (OBTENER USUARIO ACTUAL) ==========
+// ME: devuelve la info del usuario a partir del token (authMiddleware coloca req.user)
 const me = async (req, res) => {
   try {
-    res.json({
-      user: {
-        id: req.user.id,
-        fullName: req.user.fullName,
-        email: req.user.email,
-        role: req.user.Role.name
-      }
-    });
+    if (!req.user) return res.status(401).json({ message: 'No autenticado' });
+    res.json(req.user);
   } catch (err) {
-    console.error('Error en /me:', err);
-    res.status(500).json({ message: 'Error al obtener usuario' });
+    console.error('Error en me:', err);
+    res.status(500).json({ message: 'Error interno' });
   }
 };
 
-
-// ========== LOGOUT ==========
+// LOGOUT: endpoint simple que responde OK (no modifica BD)
 const logout = async (req, res) => {
   try {
+    // Si usas cookies, aquí se podrían limpiar. En este proyecto usamos token en cliente,
+    // así que solo devolvemos OK para que el frontend complete el flujo.
     res.json({ message: 'Logout exitoso' });
   } catch (err) {
     console.error('Error en logout:', err);
     res.status(500).json({ message: 'Error en logout' });
   }
 };
-
 
 // EXPORTAR TODO
 module.exports = { register, login, me, logout };

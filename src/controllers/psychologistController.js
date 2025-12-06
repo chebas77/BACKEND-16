@@ -124,7 +124,12 @@ const getAvailableTimes = async (req, res) => {
       .toLocaleDateString("en-US", { weekday: "long" })
       .toLowerCase();
 
-    const dayAvailability = psychologist.availability[dayOfWeek] || [];
+    const availabilityObj = psychologist.availability || {};
+    const dayAvailability = availabilityObj[dayOfWeek] || [];
+
+    // DEBUG: imprimir estado para diagnóstico
+    console.log(`DEBUG getAvailableTimes | psyId=${psychologistId} date=${date} day=${dayOfWeek}`);
+    console.log(`DEBUG dayAvailability:`, dayAvailability);
 
     // Citas ya tomadas ese día
     const appointments = await Appointment.findAll({
@@ -132,9 +137,26 @@ const getAvailableTimes = async (req, res) => {
     });
 
     const takenTimes = appointments.map(a => a.time);
+    console.log(`DEBUG takenTimes:`, takenTimes);
 
-    // Horarios libres
-    const availableTimes = dayAvailability.filter(time => !takenTimes.includes(time));
+    // Si no hay availability configurada, generamos slots por defecto (09:00-16:00)
+    let workingTimes = dayAvailability.slice();
+    if (!workingTimes || workingTimes.length === 0) {
+      // Generar slots cada hora empezando a las 09:00 hasta las 16:00
+      const startHour = 9;
+      const endHour = 17; // no incluido
+      const slots = [];
+      for (let h = startHour; h < endHour; h++) {
+        const hh = h.toString().padStart(2, '0');
+        slots.push(`${hh}:00`);
+      }
+      workingTimes = slots;
+      console.log(`DEBUG No availability set, using generated slots:`, workingTimes);
+    }    // Horarios libres (filtramos los que ya están tomados)
+    const availableTimes = workingTimes.filter(time => !takenTimes.includes(time));
+
+    console.log(`DEBUG workingTimes:`, workingTimes);
+    console.log(`DEBUG availableTimes:`, availableTimes);
 
     res.json({
       psychologistId,
